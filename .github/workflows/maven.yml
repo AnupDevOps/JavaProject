@@ -25,13 +25,14 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file java-project/pom.xml
       
-    - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    - name: Cache Maven packages
+      uses: actions/cache@v1
       with:
-        projectBaseDir: .
-        args: >
-            -Dsonar.organization=anupdevops
-            -Dsonar.projectKey=AnupDevOps_JavaProject
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+    - name: Build and analyze
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=AnupDevOps_JavaProject
