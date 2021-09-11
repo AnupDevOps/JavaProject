@@ -35,3 +35,4 @@ jobs:
         args: >
             -Dsonar.organization=anupdevops
             -Dsonar.projectKey=AnupDevOps_JavaProject
+            -Dsonar.sources=target/
